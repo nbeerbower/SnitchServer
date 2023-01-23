@@ -22,9 +22,16 @@ export default {
         };
     },
     mounted() {
+        this.checkForPassword();
         this.getData();
     },
     methods: {
+        checkForPassword() {
+            // check local storage for password
+            if (localStorage.getItem('password')) {
+                this.password = localStorage.getItem('password');
+            }
+        },
         getData() {
             // if password then add to auth header
             let options = {};
@@ -35,8 +42,11 @@ export default {
             }
 
             this.$http.get('/api/crash', options).then(response => {
+                // success
                 this.crashes = response.data;
                 this.displayText = 'No crashes here!';
+                // save password to local storage
+                localStorage.setItem('password', this.password);
             }, error => {
                 if (error.response.status === 401) {
                     this.password = prompt('Enter password');
